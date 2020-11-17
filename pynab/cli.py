@@ -117,7 +117,7 @@ def goal_list(budgetid):
 
 
 main.add_command(budget_main, name='budget')
-main.add_command(goal_main, name='goal')
+# main.add_command(goal_main, name='goal')
 budget_main.add_command(budget_list, name='list')
 budget_main.add_command(budget_avail, name='available')
-goal_main.add_command(goal_list, name='list')
+# goal_main.add_command(goal_list, name='list')
