@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -e
+SCRIPTDIR=$(cd $(dirname $0) && pwd -P)
+cd $SCRIPTDIR
+
+docker run --rm \
+    -u $(id -u):$(id -g) \
+	-v `pwd`/..:/data \
+	openapitools/openapi-generator-cli \
+	generate \
+	-i /data/openapi/ynab-spec-v1-swagger.json \
+	-g python \
+	--skip-validate-spec \
+	-o /data/openapi/python-build/pynab \
+	-c /data/openapi/swagger_config.json
+
+if [[ `uname -s` =~ 'Darwin' ]]; then
+	alias sed=gsed
+fi
+
+
+find -name \*.py | xargs \
+  sed -r -i 's/(import|from) openapi/\1 pynab.openapi/g'
+find -name \*.py | xargs \
+  sed -r -i 's/getattr\(openapi/getattr\(pynab.openapi/g'
+
+
+rsync -av --delete python-build/pynab/openapi/ ../pynab/openapi/
