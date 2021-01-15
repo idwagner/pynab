@@ -37,7 +37,9 @@ def budget_list():
 
 @click.command()
 @click.argument('budgetid')
-def budget_avail(budgetid):
+@click.option('--output', type=click.Choice(['table', 'json']),  default='table')
+@click.option('--show-hidden/--hide-hidden', default=False)
+def budget_avail(budgetid, output, show_hidden):
     """
     List current funds available for your budget. BUDGETID can be defined as:
 
@@ -46,7 +48,7 @@ def budget_avail(budgetid):
     - A partial or full name of the budget. Multiple matches of a name will cause an error
 
     """
-
+    import json
     try:
         bid = select_budget(budgetid)
     except exceptions.AmbiguousBudgetException:
@@ -57,11 +59,25 @@ def budget_avail(budgetid):
 
     client = get_client()
     cat_list = client.categories.get_categories(budget_id=bid)
+    if output == 'json':
+
+        data = []
+        for group in cat_list.data.category_groups:
+            if group.name == 'Hidden Categories' and not show_hidden:
+                continue
+
+            for category in group.categories:
+                data.append({
+                    k: getattr(category, k) for k in ('id', 'category_group_id', 'name', 'hidden', 'note', 'budgeted', 'activity', 'balance', 'deleted')
+                })
+
+        print(json.dumps(data))
+        return
 
     data = []
     for group in cat_list.data.category_groups:
 
-        if group.name == 'Hidden Categories':
+        if group.name == 'Hidden Categories' and not show_hidden:
             continue
 
         data.append([f'{Style.BRIGHT}{group.name}{Style.RESET_ALL}'])
