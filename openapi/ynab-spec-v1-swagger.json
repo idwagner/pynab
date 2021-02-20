@@ -2022,12 +2022,32 @@
         "goal_target_month": {
           "type": "string",
           "format": "date",
-          "description": "The target month for the goal to be completed.  Only some goal types specify this date."
+          "description": "The original target month for the goal to be completed.  Only some goal types specify this date."
         },
         "goal_percentage_complete": {
           "type": "integer",
           "format": "int32",
           "description": "The percentage completion of the goal"
+        },
+        "goal_months_to_budget": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The number of months, including the current month, left in the current goal period."
+        },
+        "goal_under_funded": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The amount of funding still needed in the current month to stay on track towards completing the goal within the current goal period."
+        },
+        "goal_overall_funded": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The total amount funded towards the goal within the current goal period."
+        },
+        "goal_overall_left": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The amount of funding still needed to complete the goal within the current goal period."
         },
         "deleted": {
           "type": "boolean",
