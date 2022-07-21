@@ -11,7 +11,7 @@ AUTHOR = 'Isaac Wagner'
 URL = 'https://github.com/idwagner/pynab'
 
 ROOT = os.path.dirname(__file__)
-VERSION='0.1.1'
+VERSION='0.1.3'
 
 def file_lines(filename):
     with open(filename, 'r') as fdesc:
