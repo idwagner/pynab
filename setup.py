@@ -35,9 +35,9 @@ setup(
         'python_dateutil >= 2.5.3',
         'setuptools >= 21.0.0',
         'urllib3 >= 1.15.1',
-        'click==7.1.2',
-        'tabulate==0.8.7',
-        'colorama==0.4.3',
+        'click >= 7.1.2',
+        'tabulate >= 0.8.7',
+        'colorama >= 0.4.3',
     ],
 
     # Data files
