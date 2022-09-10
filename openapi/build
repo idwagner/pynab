@@ -1,29 +1,47 @@
 #!/usr/bin/env bash
 
+fail_macos () {
+	"Darwin support relies on homebrew and gnu-sed, findutils"
+	exit 1
+}
+
+macos_compat () {
+	if [ `uname -s` = Darwin ]; then
+
+		which brew > /dev/null 2>&1 || fail_macos
+
+		findutils_path="$(brew --prefix)/opt/findutils/libexec/gnubin"
+		gsed_path="$(brew --prefix)/opt/gnu-sed/libexec/gnubin"
+		test -d $findutils_path || fail_macos
+		test -d $gsed_path || fail_macos
+
+		export PATH="${findutils_path}:${gsed_path}:$PATH"
+	fi
+}
+
 set -e
+macos_compat
+
 SCRIPTDIR=$(cd $(dirname $0) && pwd -P)
 cd $SCRIPTDIR
 
-docker run --rm \
-    -u $(id -u):$(id -g) \
-	-v `pwd`/..:/data \
-	openapitools/openapi-generator-cli \
+npx openapi-generator-cli \
 	generate \
-	-i /data/openapi/ynab-spec-v1-swagger.json \
+	-i ynab-spec-v1-swagger.json \
 	-g python \
 	--skip-validate-spec \
-	-o /data/openapi/python-build/pynab \
-	-c /data/openapi/swagger_config.json
+	-o python-build/pynab \
+	-c swagger_config.json
 
 if [[ `uname -s` =~ 'Darwin' ]]; then
 	alias sed=gsed
 fi
 
 
-find -name \*.py | xargs \
-  sed -r -i 's/(import|from) openapi/\1 pynab.openapi/g'
-find -name \*.py | xargs \
-  sed -r -i 's/getattr\(openapi/getattr\(pynab.openapi/g'
+find . -name \*.py | xargs \
+  gsed -r -i 's/(import|from) openapi/\1 pynab.openapi/g'
+find . -name \*.py | xargs \
+  gsed -r -i 's/getattr\(openapi/getattr\(pynab.openapi/g'
 
 
 rsync -av --delete python-build/pynab/openapi/ ../pynab/openapi/
