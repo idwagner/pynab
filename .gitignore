@@ -68,4 +68,4 @@ openapi/python-build
 .direnv
 
 # Node
-node_modules
+node_modules/**
